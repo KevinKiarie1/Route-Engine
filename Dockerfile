@@ -63,7 +63,7 @@ WORKDIR ${APP_HOME}
 
 # Copy wheels from builder stage and install
 COPY --from=builder /wheels /wheels
-RUN pip install --no-cache-dir /wheels/* \
+RUN pip install --no-cache-dir /wheels/*.whl \
     && rm -rf /wheels
 
 # Copy application source code
