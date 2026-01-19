@@ -8,10 +8,14 @@ from app.core.config import settings
 
 
 # Async engine for PostgreSQL with PostGIS
+# Use database_url_sync property to handle Railway's postgres:// format
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    settings.database_url_sync,
     echo=settings.DATABASE_ECHO,
     future=True,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,
 )
 
 # Async session factory

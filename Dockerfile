@@ -45,7 +45,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONFAULTHANDLER=1 \
     APP_HOME=/app \
     APP_USER=appuser \
-    APP_GROUP=appgroup
+    APP_GROUP=appgroup \
+    PORT=8000
 
 # Install runtime dependencies only
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -77,24 +78,24 @@ RUN mkdir -p ${APP_HOME}/logs ${APP_HOME}/static \
 # Switch to non-root user
 USER ${APP_USER}
 
-# Expose application port
-EXPOSE 8000
+# Expose application port (Railway sets PORT dynamically)
+EXPOSE ${PORT}
 
-# Health check
+# Health check using dynamic port
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# Production entrypoint using Gunicorn with Uvicorn workers
-CMD ["gunicorn", "app.main:app", \
-     "--bind", "0.0.0.0:8000", \
-     "--worker-class", "uvicorn.workers.UvicornWorker", \
-     "--workers", "4", \
-     "--threads", "2", \
-     "--timeout", "120", \
-     "--keep-alive", "5", \
-     "--max-requests", "1000", \
-     "--max-requests-jitter", "50", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "--capture-output", \
-     "--enable-stdio-inheritance"]
+# Production entrypoint using shell form to expand PORT variable
+CMD gunicorn app.main:app \
+    --bind 0.0.0.0:${PORT} \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --workers 4 \
+    --threads 2 \
+    --timeout 120 \
+    --keep-alive 5 \
+    --max-requests 1000 \
+    --max-requests-jitter 50 \
+    --access-logfile - \
+    --error-logfile - \
+    --capture-output \
+    --enable-stdio-inheritance
