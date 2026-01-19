@@ -51,7 +51,7 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Header 
         lastUpdated={overview?.generated_at ? new Date(overview.generated_at).toLocaleTimeString() : null}
         onRefresh={handleRefresh}

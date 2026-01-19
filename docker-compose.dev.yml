@@ -1,0 +1,27 @@
+# =============================================================================
+# Development Docker Compose - PostgreSQL with PostGIS
+# =============================================================================
+
+services:
+  db:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: route_engine_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: farmers_choice
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d farmers_choice"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
