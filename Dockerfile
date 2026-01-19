@@ -78,24 +78,11 @@ RUN mkdir -p ${APP_HOME}/logs ${APP_HOME}/static \
 # Switch to non-root user
 USER ${APP_USER}
 
-# Expose application port (Railway sets PORT dynamically)
-EXPOSE ${PORT}
+# Expose port 8000 (Railway will override via PORT env var)
+EXPOSE 8000
 
-# Health check using dynamic port
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/health || exit 1
+# No HEALTHCHECK in Dockerfile - Railway handles this via railway.toml
 
-# Production entrypoint using shell form to expand PORT variable
-CMD gunicorn app.main:app \
-    --bind 0.0.0.0:${PORT} \
-    --worker-class uvicorn.workers.UvicornWorker \
-    --workers 4 \
-    --threads 2 \
-    --timeout 120 \
-    --keep-alive 5 \
-    --max-requests 1000 \
-    --max-requests-jitter 50 \
-    --access-logfile - \
-    --error-logfile - \
-    --capture-output \
-    --enable-stdio-inheritance
+# Production entrypoint - Railway injects PORT at runtime
+# Using exec form with sh -c to ensure proper variable expansion
+CMD ["/bin/sh", "-c", "exec gunicorn app.main:app --bind 0.0.0.0:${PORT:-8000} --worker-class uvicorn.workers.UvicornWorker --workers 2 --timeout 120 --keep-alive 5 --access-logfile - --error-logfile -"]
