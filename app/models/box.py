@@ -1,8 +1,11 @@
 """
 Box model linked to Orders with weight and sequence_index for LIFO loading.
 """
+from __future__ import annotations
+
 from datetime import datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from sqlalchemy import (
     Integer, String, DateTime, Numeric, Boolean,
     ForeignKey, Enum as SQLEnum, Index, CheckConstraint
@@ -11,6 +14,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 
 from app.core.database import Base
+
+if TYPE_CHECKING:
+    from app.models.order import Order
+    from app.models.route import Route
 
 
 class BoxSize(enum.Enum):

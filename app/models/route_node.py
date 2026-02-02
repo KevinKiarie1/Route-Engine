@@ -2,8 +2,11 @@
 RouteNode model for telemetry logs with arrival/departure timestamps.
 Designed for TimescaleDB hypertable for efficient time-series queries.
 """
+from __future__ import annotations
+
 from datetime import datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from sqlalchemy import (
     Integer, String, DateTime, Numeric, Text, Boolean,
     ForeignKey, Enum as SQLEnum, Index, UniqueConstraint
@@ -16,6 +19,10 @@ import enum
 
 from app.core.database import Base
 from app.core.config import settings
+
+if TYPE_CHECKING:
+    from app.models.route import Route
+    from app.models.outlet import Outlet
 
 
 class NodeStatus(enum.Enum):

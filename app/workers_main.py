@@ -6,12 +6,35 @@ Cloudflare Workers Python limitations:
 - Only Pyodide-compatible packages are supported
 - No FastAPI, Flask, or other web frameworks
 - Use the built-in Request/Response from 'js' module
+
+Note: The 'js' module only exists in Cloudflare Workers runtime.
+VS Code will show import errors locally - this is expected.
 """
-from js import Response, Headers, JSON
+from typing import TYPE_CHECKING, Any
 import json
 
+# Cloudflare Workers runtime provides the 'js' module
+# This try/except allows the file to be parsed locally without errors
+if TYPE_CHECKING:
+    # Type stubs for IDE support
+    class Response:
+        @staticmethod
+        def new(body: str, status: int = 200, headers: Any = None) -> "Response": ...
+    
+    class Headers:
+        @staticmethod
+        def new() -> "Headers": ...
+        def set(self, key: str, value: str) -> None: ...
+else:
+    try:
+        from js import Response, Headers  # type: ignore[import-not-found]
+    except ImportError:
+        # Stubs for local testing (won't actually work)
+        Response = None  # type: ignore
+        Headers = None  # type: ignore
 
-def create_json_response(data: dict, status: int = 200) -> Response:
+
+def create_json_response(data: dict, status: int = 200):
     """Create a JSON response with proper headers."""
     headers = Headers.new()
     headers.set("Content-Type", "application/json")

@@ -1,7 +1,10 @@
 """
 Outlet model with PostGIS geospatial support.
 """
+from __future__ import annotations
+
 from datetime import datetime
+from typing import TYPE_CHECKING
 from sqlalchemy import Integer, String, DateTime, Enum as SQLEnum, Text, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
@@ -11,6 +14,9 @@ import enum
 
 from app.core.database import Base
 from app.core.config import settings
+
+if TYPE_CHECKING:
+    from app.models.order import Order
 
 
 class OutletPriority(enum.Enum):

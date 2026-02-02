@@ -1,8 +1,11 @@
 """
 Route model with Driver/Vehicle assignment.
 """
+from __future__ import annotations
+
 from datetime import datetime, date
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from sqlalchemy import (
     Integer, String, DateTime, Date, Numeric, Text,
     ForeignKey, Enum as SQLEnum, Index
@@ -11,6 +14,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 
 from app.core.database import Base
+
+if TYPE_CHECKING:
+    from app.models.box import Box
+    from app.models.route_node import RouteNode
 
 
 class RouteStatus(enum.Enum):
