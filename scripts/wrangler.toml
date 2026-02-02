@@ -1,0 +1,43 @@
+# =============================================================================
+# Route Engine - Cloudflare Workers Configuration
+# =============================================================================
+name = "route-engine-api"
+main = "../app/workers_main.py"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["python_workers"]
+
+# Environment variables
+[vars]
+MESSAGE = "Hello from Route Engine!"
+ENVIRONMENT = "production"
+
+# Production environment
+[env.production]
+name = "route-engine-api-prod"
+vars = { MESSAGE = "Route Engine Production", ENVIRONMENT = "production" }
+
+# Staging environment  
+[env.staging]
+name = "route-engine-api-staging"
+vars = { MESSAGE = "Route Engine Staging", ENVIRONMENT = "staging" }
+
+# Development environment
+[env.dev]
+name = "route-engine-api-dev"
+vars = { MESSAGE = "Route Engine Development", ENVIRONMENT = "development" }
+
+# Routes (optional - configure your domain)
+# [[routes]]
+# pattern = "api.yourdomain.com/*"
+# zone_name = "yourdomain.com"
+
+# D1 Database binding (optional - for SQLite-based database)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "route-engine-db"
+# database_id = "your-database-id"
+
+# Hyperdrive binding (optional - for PostgreSQL connection pooling)
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "your-hyperdrive-id"
